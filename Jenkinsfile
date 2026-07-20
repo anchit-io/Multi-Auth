@@ -16,8 +16,10 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'npm install'
-                sh 'npx prisma generate'
+                sh '''
+                npm install
+                npx prisma generate
+                '''
             }
         }
 
@@ -33,7 +35,7 @@ pipeline {
                 if npm run | grep -q " test"; then
                     npm test
                 else
-                    echo "No test script found. Skipping tests."
+                    echo "No tests found. Skipping."
                 fi
                 '''
             }
@@ -42,7 +44,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                pm2 restart $APP_NAME --update-env || pm2 start server.js --name $APP_NAME --update-env
+                pm2 restart multi-auth --update-env || pm2 start server.js --name multi-auth --update-env
                 '''
             }
         }
@@ -51,7 +53,7 @@ pipeline {
             steps {
                 sh '''
                 sleep 10
-                curl --fail $HEALTH_URL
+                curl --fail https://multiauth-anc.duckdns.org/health
                 '''
             }
         }
@@ -59,14 +61,11 @@ pipeline {
 
     post {
         success {
-            echo "Deployment successful."
+            echo 'Deployment Successful!'
         }
 
         failure {
-            echo "Deployment failed. Restarting previous PM2 process."
-            sh '''
-            pm2 restart $APP_NAME --update-env || true
-            '''
+            echo 'Deployment Failed!'
         }
     }
 }
