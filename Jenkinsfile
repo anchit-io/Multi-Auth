@@ -14,6 +14,14 @@ pipeline {
             }
         }
 
+        stage('Prepare Environment') {
+            steps {
+                sh '''
+                cp /home/ubuntu/Multi-Auth/.env .
+                '''
+            }
+        }
+
         stage('Build') {
             steps {
                 sh '''
@@ -25,7 +33,9 @@ pipeline {
 
         stage('Run Prisma Migrations') {
             steps {
-                sh 'npx prisma migrate deploy'
+                sh '''
+                npx prisma migrate deploy
+                '''
             }
         }
 
@@ -69,3 +79,4 @@ pipeline {
         }
     }
 }
+
