@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -17,7 +18,7 @@ pipeline {
         stage('Prepare Environment') {
             steps {
                 sh '''
-                cp /home/ubuntu/Multi-Auth/.env .
+                cp /opt/multi-auth/.env .
                 '''
             }
         }
@@ -45,7 +46,7 @@ pipeline {
                 if npm run | grep -q " test"; then
                     npm test
                 else
-                    echo "No tests found. Skipping."
+                    echo "No tests found. Skipping tests."
                 fi
                 '''
             }
@@ -63,7 +64,7 @@ pipeline {
             steps {
                 sh '''
                 sleep 10
-                curl --fail https://multiauth-anc.duckdns.org/health
+                curl --fail $HEALTH_URL
                 '''
             }
         }
